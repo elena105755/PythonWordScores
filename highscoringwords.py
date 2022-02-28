@@ -1,3 +1,8 @@
+# !/usr/bin/env python
+# -*- coding: utf8 -*-
+
+# Python 3.10.2
+
 __author__ = 'ameline'
 
 import operator
