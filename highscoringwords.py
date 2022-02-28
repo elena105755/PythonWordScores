@@ -6,6 +6,7 @@
 __author__ = 'ameline'
 
 import operator
+from itertools import permutations
 
 
 class HighScoringWords:
@@ -70,23 +71,29 @@ class HighScoringWords:
         contents of the wordlist.txt file
         :return: The list of top buildable words.
         """
-        list_discarded_words = []
-        match = []
-        output = {}
+        matched_words = []
+        string = ""
+
         for word in self.valid_words:
-            if word[:len(starting_letters)] == starting_letters and len(word) >= self.MIN_WORD_LENGTH:
-                match.append(word)
-                for w in match:
-                    output[w] = 0
-                    for letter in w:
-                        output[w] += self.letter_values[letter]
-            elif len(word) < self.MIN_WORD_LENGTH:
-                list_discarded_words.append(word)
+            count = 0
+            for x in starting_letters:
+                if x in word:
+                    count += 1
+                if count == len(starting_letters):
+                    matched_words.append(word)
+                    break
+        for matched_word in matched_words:
+            if len(matched_word) > len(starting_letters) or len(matched_word) < self.MIN_WORD_LENGTH:
+                continue
+            string = matched_word
+            break
+        print(string)
+        return string
 
-        tuples = self._sort_word_scores(output, self.MAX_LEADERBOARD_LENGTH)
-        self.top_word_list_from_letters = [tpl[0] for tpl in tuples]
-
-        return self.top_word_list_from_letters
+        # for word in self.valid_words:
+        #     if permutations(starting_letters) == word:
+        #         matched_words.append(word)
+        # return matched_words
 
     @staticmethod
     def _sort_word_scores(dictionary, limit):
@@ -98,10 +105,20 @@ class HighScoringWords:
         sorted_dictionary = sorted(dictionary.items(), key=operator.itemgetter(1), reverse=True)
         return sorted_dictionary[:limit]
 
+    @staticmethod
+    def permutation(input_string):
+        if input_string == "":
+            return [input_string]
+        else:
+            match = []
+            for an in permutations(input_string[1:]):
+                print(an)
+                for pos in range(len(an) + 1):
+                    match.append(an[:pos] + input_string[0] + an[pos:])
+            return match
+
 
 if __name__ == '__main__':
-    import os
-    print(os.getcwd())
     hs_list = HighScoringWords(validwords='wordlist.txt', lettervalues='letterValues.txt')
     top_100 = hs_list.build_leaderboard_for_word_list()
-    first_5 = hs_list.build_leaderboard_for_letters('test')
+    scrambled = hs_list.build_leaderboard_for_letters('deora')
